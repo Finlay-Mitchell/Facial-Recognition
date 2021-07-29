@@ -3,13 +3,18 @@
 import cv2
 
 faceCascade = cv2.CascadeClassifier("cascades/haarcascade_frontalface_default.xml")  # Loads up file for face detection.
-Location = "http://192.168.0.15:8080/video"  # Gets the video stream.
+location = ""  # Gets the video stream.
 cv2.namedWindow("IPWebcam")  # Create a window.
-vc = cv2.VideoCapture(Location)  # Get the video capture from the URL.
+vc = cv2.VideoCapture(location)  # Get the video capture from the URL.
+
+if not vc.isOpened():
+    print("Can't open this video stream location")
+    exit()
 
 while True:
     ret, frame = vc.read()  # Read the data.
     fps = vc.get(cv2.CAP_PROP_FPS)  # This gets the framerate of the video stream.
+
     faces = faceCascade.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGRA2RGB), scaleFactor=1.1, minNeighbors=5,
                                          minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)  # Detects the faces.
 
@@ -20,8 +25,10 @@ while True:
 
     cv2.putText(frame, str(fps), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255, 255), 2)  # Shows the FPS count.
     cv2.imshow("IPWebcam", frame)  # Displays the image.
-    if cv2.waitKey(1) & 0xFF == ord('q'):  # Waits for the user to press 'q' before exeting the program.
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):  # Waits for the user to press 'q' before exiting the program.
         break
 
+# Release the capture.
 vc.release()
-cv2.destroyAllWindows()
+cv2.destroyAllWindows()  # Exit the window.
